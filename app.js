@@ -4,6 +4,7 @@
 const express = require('express') //1
 const app = express()  //1
 const appRoute = require('./routes') // 5
+const cors = require('cors')
 // 1.1 --> nodemon
 const mongoose = require('mongoose'); //2
 mongoose.connect('mongodb+srv://thien:thien@cluster0.m28vgln.mongodb.net/test') //2
@@ -12,15 +13,17 @@ var bodyParser = require('body-parser')  //3
 
 const UserModel = require('./models/user.model');
 
+
+
 // test port
 app.get('/', (req, res) => {
-    res.send('hello world')
+  res.send('hello world')
 })
 
 app.use(bodyParser.json()) // 4
-
+app.use(cors())
 app.use(appRoute) // 5.1
 
-  app.listen(3000, ()=>{
-    console.log("server is runing");
-  })
+app.listen(3000, () => {
+  console.log("server is runing");
+})
