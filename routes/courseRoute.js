@@ -21,7 +21,7 @@ route.get('/api/course', courseController.getAllCourse)
 route.get('/api/course/:id', courseController.getrowCourse)
 route.post('/api/course',upload, courseController.createCourse)
 // route.post('/api/course/upload',upload ,courseController.uploadCourse)
-route.put('/api/course/:id', courseController.editCourse)
+route.put('/api/course/:id',upload, courseController.editCourse)
 route.delete('/api/course/:id', courseController.deleteCourse)
 
 module.exports = route;

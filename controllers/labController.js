@@ -1,11 +1,11 @@
-const CourseModel = require('../models/course.model');
+const LabModel = require('../models/lab.model');
 let fs = require('fs');
 
 
-const courseController = {
-    getAllCourse:   async (req,res)=>{
+const labController = {
+    getAllLab:   async (req,res)=>{
         try {
-            const data = await CourseModel.find()
+            const data = await LabModel.find()
 
             return res.status(200).json({
                 status: "Success",
@@ -19,10 +19,10 @@ const courseController = {
             })
         }
     },
-    getrowCourse:   async (req,res)=>{
+    getrowLab:   async (req,res)=>{
         try {
             const {id} = req.params;
-            const data = await CourseModel.findById(id)
+            const data = await LabModel.findById(id)
 
             return res.status(200).json({
                 status: "Success",
@@ -37,14 +37,18 @@ const courseController = {
         }
     },
 
-    createCourse:   async (req,res)=>{
+    createLab:   async (req,res)=>{
         try {
+            const arr = [];
             const body = req.body;
-            const nameImage = req.file.filename;
-            body.image = nameImage;
-            const {name,id_language,level,name_language,description, image } = body;
-            const Course = new CourseModel({name,id_language,level,name_language,description, image});
-            await Course.save();
+            for (let index = 0; index < req.files.length; index++) { //NEW ONE
+                arr.push(req.files[index].filename);
+              }
+        //     const nameImage = req.file.filename;
+            body.image = arr;
+            const {name,id_course,content,name_course,description, image } = body;
+            const Lab = new LabModel({name,id_course,content,name_course,description, image});
+            await Lab.save();
             return res.status(200).json({
                 status: "Success",
                 message: "Create data success !!!",
@@ -55,9 +59,12 @@ const courseController = {
                 message: "Create data Fail !!!",
             })
         }
+
+        // console.log(body);
+        // console.log(req.body);
     },
 
-    editCourse:   async (req,res)=>{
+    editLab:   async (req,res)=>{
 
         try {
             const {id} = req.params;
@@ -82,7 +89,7 @@ const courseController = {
             // const {name,id_language,level,name_language,description, image } = newPost;
            
 
-            await CourseModel.findByIdAndUpdate(id,newPost)
+            await LabModel.findByIdAndUpdate(id,newPost)
 
 
             res.status(200).json({
@@ -97,10 +104,10 @@ const courseController = {
         }
     },
 
-    deleteCourse:   async (req,res)=>{
+    deleteLab:   async (req,res)=>{
         try {
             const {id} = req.params;
-            const result =  await CourseModel.findByIdAndDelete(id)
+            const result =  await LabModel.findByIdAndDelete(id)
             if(result.image != ''){
                 try {    
                     fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+result.image);
@@ -121,7 +128,7 @@ const courseController = {
         }
     },
 
-    uploadCourse: async (req,res)=>{
+    uploadLab: async (req,res)=>{
         try {
             console.log("dang vao day")
             
@@ -140,4 +147,4 @@ const courseController = {
     }
 }
 
-module.exports = courseController
+module.exports = labController
