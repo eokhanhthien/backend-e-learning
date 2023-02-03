@@ -19,6 +19,7 @@ const upload = multer({storage: storage}).array("image",3)
 
 route.get('/api/lab', labController.getAllLab)
 route.get('/api/lab/:id', labController.getrowLab)
+route.get('/api/labdetail/:id', labController.getrowLabDetail)
 route.post('/api/lab',upload, labController.createLab)
 // route.post('/api/lab/upload',upload ,labController.uploadLab)
 route.put('/api/lab/:id',upload, labController.editLab)

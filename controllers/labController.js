@@ -1,4 +1,5 @@
 const LabModel = require('../models/lab.model');
+const LabDetailModel = require('../models/labDetail.model');
 let fs = require('fs');
 
 
@@ -36,6 +37,23 @@ const labController = {
             })
         }
     },
+    getrowLabDetail:   async (req,res)=>{
+        try {
+            const {id} = req.params;
+            const data = await LabDetailModel.findOne({ id_lab : id });
+
+            return res.status(200).json({
+                status: "Success",
+                message: "Get data success !!!",
+                data: data
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: "Fail",
+                message: "Get data Fail !!!",
+            })
+        }
+    },
 
     createLab:   async (req,res)=>{
         try {
@@ -46,9 +64,24 @@ const labController = {
               }
         //     const nameImage = req.file.filename;
             body.image = arr;
-            const {name,id_course,content,name_course,description, image } = body;
-            const Lab = new LabModel({name,id_course,content,name_course,description, image});
-            await Lab.save();
+            content_lab = body.content;
+            description_lab = body.description;
+            const {name,id_course,name_course  } = body;
+            const Lab = new LabModel({name,id_course,name_course});
+            Lab.save((error, course) => {
+                if (error) {
+                  console.error(error);
+                  return;
+                }
+              const id_lab = course._id.toString()
+              const image = arr
+              const content = content_lab
+              const description = description_lab
+              const LabDetail = new LabDetailModel({id_lab,content,description,image});
+              LabDetail.save();
+                console.log('Course added with _id:', course._id.toString());
+              });
+
             return res.status(200).json({
                 status: "Success",
                 message: "Create data success !!!",
@@ -108,13 +141,21 @@ const labController = {
         try {
             const {id} = req.params;
             const result =  await LabModel.findByIdAndDelete(id)
-            if(result.image != ''){
-                try {    
-                    fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+result.image);
-                } catch (error) {
-                    console.log(error);
-                }
+            console.log(id);
+            if(result){  
+                    const resultDetail = await LabDetailModel.findOneAndDelete({ id_lab : id });
+                    if(resultDetail.image != ''){
+                        try {   
+                            for(let i =0 ; i< resultDetail.image.length ; i++){
+                                fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+ resultDetail.image[i]);
+                            } 
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }                
             }
+
+
 
             res.status(200).json({
                 status: "Success",
