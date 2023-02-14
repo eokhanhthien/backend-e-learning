@@ -101,38 +101,58 @@ const labController = {
 
         try {
             const {id} = req.params;
-            // const post = req.body;
-            // console.log(post);
-            let new_image = '';
-            if(req.file){
-                new_image = req.file.filename;
+            let arr = [];
+            const body = req.body;
+            
+            // arr = req.body.old_image.split(', ') // chuyen chuoi thanh
+            const old_image = req.body.old_image;
+            const old_image_array = old_image.split(',');
+            // console.log(typeof old_image_array);
+            // console.log(old_image_array);
+          
+ 
+            if(req.files.length >0){
+                for (let index = 0; index < req.files.length; index++) { //NEW ONE
+                    arr.push(req.files[index].filename);
+                  }
                 try {
-                    fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+req.body.old_image);
+                    for(let i = 0 ; i< old_image_array.length ; i++){
+                        fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+old_image_array[i]);
+                    }
                     
                 } catch (error) {
                     console.log(error);
                 }
+              
             }else{
-                new_image = req.body.old_image;
+                arr = old_image_array;
+            
             }
-            const newPost = req.body;
-            newPost.image = new_image;
-            // console.log(req.body);
-            // console.log(res.file.filename);
-            // const {name,id_language,level,name_language,description, image } = newPost;
-           
+            console.log(arr);
 
-            await LabModel.findByIdAndUpdate(id,newPost)
+            content_lab = body.content;
+            description_lab = body.description;
+            console.log(body);
+            const {name,id_course,name_course  } = body;
+            await LabModel.findByIdAndUpdate(id, { name: body.name, id_course: body.id_course, name_course: body.name_course });
+          
+              const id_lab = id
+              const image = arr
+              const content = content_lab
+              const description = description_lab
+              await LabDetailModel.findOneAndUpdate({id_lab : id},{id_lab,content,description,image});
+             
+            
+            //   });
 
-
-            res.status(200).json({
+            return res.status(200).json({
                 status: "Success",
-                message: "Edit data success !!!",
+                message: "Create data success !!!",
             });
         } catch (error) {
-            res.status(500).json({
+            return res.status(500).json({
                 status: "Fail",
-                message: "Edit data Fail !!!",
+                message: "Create data Fail !!!",
             })
         }
     },

@@ -1,30 +1,65 @@
 const UserModel = require('../models/user.model');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const userController = {
-    createUser:   async (req,res)=>{
+    signup: async (req, res) => {
         try {
-            const body = req.body;
-            const {name, email} = body;
-            const user = new UserModel({name, email});
-            // console.log(user);
+
+            const hashpassword = await bcrypt.hash(req.body.password, 1);
+            const user = new UserModel({ name: req.body.name, email: req.body.email, password: hashpassword, role: req.body.role });
             await user.save();
             return res.status(200).json({
                 status: "Success",
-                message: "Create data success !!!",
+                message: "Signup success !!!",
+                user,
+
             });
         } catch (error) {
             return res.status(500).json({
                 status: "Fail",
-                message: "Create data Fail !!!",
+                message: "Signup Fail !!!",
             })
         }
     },
 
-    editUser:   async (req,res)=>{
+    login: async (req, res) => {
+        // console.log(req.body);
         try {
-            const {id} = req.params;
-            const {name, email} = req.body;
-            await UserModel.findByIdAndUpdate(id, {name, email})
+            const user = await UserModel.findOne({ email: req.body.email });
+            // console.log(req.body.password);
+            // console.log(user);
+            if (!user) {
+                return res.status(401).json({
+                    status: "Fail",
+                    message: "No user found with this email",
+                });
+            }
+            const isMatch = await bcrypt.compare(req.body.password, user.password);
+            // console.log(isMatch);
+            if (!isMatch) {
+                return res.status(401).json({
+                    status: "Fail",
+                    message: "Incorrect password",
+                });
+            }
+            const token = jwt.sign({ _id: user._id.toString() }, 'secretKey', { expiresIn: '1200s' });
+            // localStorage.setItem("token", token );
+            return res.status(200).json({ user, token });
+        } catch (error) {
+            // console.log(error);
+            return res.status(500).json({
+                status: "Fail",
+                message: "Server error",
+            });
+        }
+    },
+
+    editUser: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { name, email } = req.body;
+            await UserModel.findByIdAndUpdate(id, { name, email })
 
 
             res.status(200).json({
@@ -39,9 +74,9 @@ const userController = {
         }
     },
 
-    deleteUser:   async (req,res)=>{
+    deleteUser: async (req, res) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             await UserModel.findByIdAndDelete(id)
 
 
