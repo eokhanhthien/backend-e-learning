@@ -1,12 +1,12 @@
-const LabModel = require('../models/lab.model');
-const LabDetailModel = require('../models/labDetail.model');
+const lessonModel = require('../models/lesson.model');
+const LessonDetailModel = require('../models/lessonDetail.model');
 let fs = require('fs');
 
 
 const labController = {
     getAllLab:   async (req,res)=>{
         try {
-            const data = await LabModel.find()
+            const data = await lessonModel.find()
 
             return res.status(200).json({
                 status: "Success",
@@ -23,7 +23,7 @@ const labController = {
     getrowLab:   async (req,res)=>{
         try {
             const {id} = req.params;
-            const data = await LabModel.findById(id)
+            const data = await lessonModel.findById(id)
 
             return res.status(200).json({
                 status: "Success",
@@ -40,7 +40,7 @@ const labController = {
     getrowLabDetail:   async (req,res)=>{
         try {
             const {id} = req.params;
-            const data = await LabDetailModel.findOne({ id_lab : id });
+            const data = await LessonDetailModel.findOne({ id_lab : id });
 
             return res.status(200).json({
                 status: "Success",
@@ -67,7 +67,7 @@ const labController = {
             content_lab = body.content;
             description_lab = body.description;
             const {name,id_course,name_course  } = body;
-            const Lab = new LabModel({name,id_course,name_course});
+            const Lab = new lessonModel({name,id_course,name_course});
             Lab.save((error, course) => {
                 if (error) {
                   console.error(error);
@@ -77,7 +77,7 @@ const labController = {
               const image = arr
               const content = content_lab
               const description = description_lab
-              const LabDetail = new LabDetailModel({id_lab,content,description,image});
+              const LabDetail = new LessonDetailModel({id_lab,content,description,image});
               LabDetail.save();
                 console.log('Course added with _id:', course._id.toString());
               });
@@ -134,13 +134,13 @@ const labController = {
             description_lab = body.description;
             console.log(body);
             const {name,id_course,name_course  } = body;
-            await LabModel.findByIdAndUpdate(id, { name: body.name, id_course: body.id_course, name_course: body.name_course });
+            await lessonModel.findByIdAndUpdate(id, { name: body.name, id_course: body.id_course, name_course: body.name_course });
           
               const id_lab = id
               const image = arr
               const content = content_lab
               const description = description_lab
-              await LabDetailModel.findOneAndUpdate({id_lab : id},{id_lab,content,description,image});
+              await LessonDetailModel.findOneAndUpdate({id_lab : id},{id_lab,content,description,image});
              
             
             //   });
@@ -160,10 +160,10 @@ const labController = {
     deleteLab:   async (req,res)=>{
         try {
             const {id} = req.params;
-            const result =  await LabModel.findByIdAndDelete(id)
+            const result =  await lessonModel.findByIdAndDelete(id)
             console.log(id);
             if(result){  
-                    const resultDetail = await LabDetailModel.findOneAndDelete({ id_lab : id });
+                    const resultDetail = await LessonDetailModel.findOneAndDelete({ id_lab : id });
                     if(resultDetail.image != ''){
                         try {   
                             for(let i =0 ; i< resultDetail.image.length ; i++){

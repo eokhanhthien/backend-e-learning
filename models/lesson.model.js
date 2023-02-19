@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 
-const LabSchema = new Schema({
+const LessonSchema = new Schema({
     id_course: {type: String , require: true},
     name_course: {type: String , require: true},
     name: {type: String , require: true},
@@ -14,4 +14,4 @@ const LabSchema = new Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('Lab', LabSchema)
+module.exports = mongoose.model('Lesson', LessonSchema)
