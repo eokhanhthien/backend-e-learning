@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 
 const userController = {
     signup: async (req, res) => {
+        const post = req.body;
+        console.log(post)
         try {
 
             const hashpassword = await bcrypt.hash(req.body.password, 1);
