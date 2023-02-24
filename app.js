@@ -11,7 +11,7 @@ mongoose.connect('mongodb+srv://thien:thien@cluster0.m28vgln.mongodb.net/test') 
   .then(() => console.log('Connected!'));
 var bodyParser = require('body-parser')  //3 
 
-const UserModel = require('./models/user.model');
+
 
 
 

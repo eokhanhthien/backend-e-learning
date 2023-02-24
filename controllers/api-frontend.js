@@ -1,6 +1,8 @@
 const CourseModel = require('../models/course.model');
 const LessonModel = require('../models/lesson.model');
 const UserModel = require('../models/user.model');
+const EnrollmentModel = require('../models/enrollment.model');
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -80,7 +82,7 @@ const apifrontendController = {
 
     login: async (req, res) => {
         const post = req.body;
-        console.log(post.email);
+        // console.log(post.email);
         try {
             const user = await UserModel.findOne({ email: post.email });
             // console.log(post.password);
@@ -110,6 +112,45 @@ const apifrontendController = {
             });
         }
     },
+
+    get_join_course:   async (req,res)=>{
+     
+        try {
+            const {id_user, id_course} = req.body;
+            const data = await EnrollmentModel.findOne({ id_user, id_course });
+
+            return res.status(200).json({
+                status: "Success",
+                message: "Get data success !!!",
+                data: data
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: "Fail",
+                message: "Get data Fail !!!",
+            })
+        }
+    },
+
+
+    add_join_course: async (req, res) => {
+        try {
+            const {id_user, id_course} = req.body;
+            const data = await  new EnrollmentModel({ id_user, id_course });
+            await data.save();
+            return res.status(200).json({
+                status: "Success",
+                message: "Create data success !!!",
+                data: data
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: "Fail",
+                message: "Create data Fail !!!",
+            })
+        }
+    },
+    
 }
 
 module.exports = apifrontendController

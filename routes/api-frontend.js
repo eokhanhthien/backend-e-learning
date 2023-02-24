@@ -30,4 +30,6 @@ route.get('/api/lesson-frontend/:id', apifrontend.getAlllesson)
 
 route.post('/api/user-frontend/signup', apifrontend.signup)
 route.post('/api/user-frontend/login', apifrontend.login)
+route.post('/api/user-frontend/add-join-course', apifrontend.add_join_course)
+route.post('/api/user-frontend/get-join-course', apifrontend.get_join_course)
 module.exports = route;
