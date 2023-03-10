@@ -27,6 +27,7 @@ const authenticate = async (req, res, next) => {
 route.get('/api/course-frontend', apifrontend.getAllcourse)
 route.get('/api/course-frontend/:id', apifrontend.getcourseByid)
 route.get('/api/lesson-frontend/:id', apifrontend.getAlllesson)
+route.get('/api/lesson-detail-frontend/:id', apifrontend.getDetaillesson)
 
 route.post('/api/user-frontend/signup', apifrontend.signup)
 route.post('/api/user-frontend/login', apifrontend.login)

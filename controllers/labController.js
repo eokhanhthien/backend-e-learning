@@ -128,11 +128,11 @@ const labController = {
                 arr = old_image_array;
             
             }
-            console.log(arr);
+            // console.log(arr);
 
             content_lab = body.content;
             description_lab = body.description;
-            console.log(body);
+            // console.log(body);
             const {name,id_course,name_course  } = body;
             await lessonModel.findByIdAndUpdate(id, { name: body.name, id_course: body.id_course, name_course: body.name_course });
           
@@ -161,7 +161,7 @@ const labController = {
         try {
             const {id} = req.params;
             const result =  await lessonModel.findByIdAndDelete(id)
-            console.log(id);
+            // console.log(id);
             if(result){  
                     const resultDetail = await LessonDetailModel.findOneAndDelete({ id_lab : id });
                     if(resultDetail.image != ''){

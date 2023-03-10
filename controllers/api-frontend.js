@@ -1,4 +1,5 @@
 const CourseModel = require('../models/course.model');
+const LessonDetailModel = require('../models/lessonDetail.model');
 const LessonModel = require('../models/lesson.model');
 const UserModel = require('../models/user.model');
 const EnrollmentModel = require('../models/enrollment.model');
@@ -58,13 +59,32 @@ const apifrontendController = {
             })
         }
     },
+
+    getDetaillesson: async (req,res)=>{
+        try {
+            const {id} = req.params;
+            const data = await LessonDetailModel.findOne({id_lab: id})
+            
+            return res.status(200).json({
+                status: "Success",
+                message: "Get data success !!!",
+                data: data
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: "Fail",
+                message: "Get data Fail !!!",
+            })
+        }
+    },
+
     signup: async (req, res) => {
         const post = req.body.post;
         // console.log(post.name)
         try {
 
             const hashpassword = await bcrypt.hash(post.password, 1);
-            const user = new UserModel({ name: post.name, email: post.email, password: hashpassword, role: post.role, image: post.image });
+            const user = new UserModel({ name: post.name, email: post.email, password: hashpassword, role: post.role, image: post.image ,city: post.city, district: post.district, ward: post.ward, phonenumber: post.phonenumber, birthday: post.birthday,sex:post.sex });
             await user.save();
             return res.status(200).json({
                 status: "Success",

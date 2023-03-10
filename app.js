@@ -7,6 +7,7 @@ const appRoute = require('./routes') // 5
 const cors = require('cors')
 // 1.1 --> nodemon
 const mongoose = require('mongoose'); //2
+mongoose.set('strictQuery', true);
 mongoose.connect('mongodb+srv://thien:thien@cluster0.m28vgln.mongodb.net/test') //2
   .then(() => console.log('Connected!'));
 var bodyParser = require('body-parser')  //3 
