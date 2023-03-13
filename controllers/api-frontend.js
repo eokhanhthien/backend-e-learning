@@ -7,6 +7,10 @@ const EnrollmentModel = require('../models/enrollment.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const _ = require('lodash');
+
+let fs = require('fs');
+
 const apifrontendController = {
     getAllcourse:   async (req,res)=>{
         try {
@@ -99,6 +103,43 @@ const apifrontendController = {
             })
         }
     },
+    changeinfo: async (req, res) => {
+        const post = req.body;
+        const id =  post._id;
+        console.log(post)
+        console.log(req.file)
+        try {
+            let new_image = '';
+            if(req.file){
+                new_image = req.file.filename;
+                try {
+                    if(req.body.old_image != 'user-default.png'){
+                        fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+req.body.old_image);
+                    }
+                    
+                } catch (error) {
+                    console.log(error);
+                }
+            }else{
+                new_image = req.body.old_image;
+            }
+            const newPost = req.body;
+            newPost.image = new_image;
+
+
+             await UserModel.findByIdAndUpdate({_id:id}, newPost);
+       
+            return res.status(200).json({
+                status: "Success",
+                message: "Change info success !!!",
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: "Fail",
+                message: "Change info Fail !!!",
+            })
+        }
+    },
 
     login: async (req, res) => {
         const post = req.body;
@@ -122,8 +163,10 @@ const apifrontendController = {
                 });
             }
             const token = jwt.sign({ _id: user._id.toString() }, 'secretKey_User', { expiresIn: '1200s' });
-            // localStorage.setItem("token", token );
-            return res.status(200).json({ user, token });
+            // Trừ trường password và _id ra
+            const sanitizedUser = _.omit(user.toObject(), ['password',]);
+            return res.status(200).json({ user: sanitizedUser, token });
+
         } catch (error) {
             // console.log(error);
             return res.status(500).json({
@@ -132,6 +175,8 @@ const apifrontendController = {
             });
         }
     },
+
+    
 
     get_join_course:   async (req,res)=>{
      
