@@ -86,16 +86,24 @@ const apifrontendController = {
         const post = req.body.post;
         // console.log(post.name)
         try {
+            const userAvailable = await UserModel.findOne({ email: post.email });
+            if(userAvailable){
+                return res.status(500).json({
+                    status: "Fail",
+                    message: "Signup Fail user available!!!",
+                }) 
+            }else{
+                const hashpassword = await bcrypt.hash(post.password, 1);
+                const user = new UserModel({ name: post.name, email: post.email, password: hashpassword, role: post.role, image: post.image ,city: post.city, district: post.district, ward: post.ward, phonenumber: post.phonenumber, birthday: post.birthday,sex:post.sex });
+                await user.save();
+                return res.status(200).json({
+                    status: "Success",
+                    message: "Signup success !!!",
+                    user,
+    
+                });
+            }
 
-            const hashpassword = await bcrypt.hash(post.password, 1);
-            const user = new UserModel({ name: post.name, email: post.email, password: hashpassword, role: post.role, image: post.image ,city: post.city, district: post.district, ward: post.ward, phonenumber: post.phonenumber, birthday: post.birthday,sex:post.sex });
-            await user.save();
-            return res.status(200).json({
-                status: "Success",
-                message: "Signup success !!!",
-                user,
-
-            });
         } catch (error) {
             return res.status(500).json({
                 status: "Fail",
