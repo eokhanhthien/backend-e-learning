@@ -149,6 +149,44 @@ const apifrontendController = {
         }
     },
 
+    changepassword: async (req, res) => {
+        const post = req.body.post;
+        const id =  post.idUser;
+        // console.log(post)
+        // console.log(req.file)
+        try {
+           const user = await UserModel.findById({_id:id});
+        //    console.log(post.old_password)
+           if(user){
+            const isMatch = await bcrypt.compare(post.old_password, user.password);
+            // console.log(isMatch)
+            if(isMatch){
+                const hashpassword = await bcrypt.hash(post.new_password, 1);
+                // console.log(hashpassword)
+                await UserModel.findByIdAndUpdate({_id:id}, {password : hashpassword});
+
+                return res.status(200).json({
+                    status: "Success",
+                    message: "Change password success !!!",
+                    user,
+    
+                });
+            }else{
+                res.status(500).json({
+                    status: "Fail",
+                    message: "Edit data Fail !!!",
+                })
+            }
+           }
+
+        } catch (error) {
+            res.status(500).json({
+                status: "Fail",
+                message: "Edit data Fail !!!",
+            })
+        }
+    },
+
     login: async (req, res) => {
         const post = req.body;
         // console.log(post.email);
