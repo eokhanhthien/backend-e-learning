@@ -4,6 +4,8 @@ const LessonModel = require('../models/lesson.model');
 const UserModel = require('../models/user.model');
 const EnrollmentModel = require('../models/enrollment.model');
 
+const Enrollment = require('../models/enrollment.model');
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -20,6 +22,35 @@ const apifrontendController = {
                 status: "Success",
                 message: "Get data success !!!",
                 data: data
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: "Fail",
+                message: "Get data Fail !!!",
+            })
+        }
+    },
+    getMycourse:   async (req,res)=>{
+
+        const {id} = req.params;
+    
+        
+        try {
+            const data = await Enrollment.find({id_user : id})
+
+            // console.log(data)
+            let arr = [];
+            for( let i=0 ; i < data.length ; i++){
+                arr.push(data[i].id_course)
+            }
+
+            const course = await CourseModel.find({_id: {$in: arr}})
+            // console.log(course)
+
+            return res.status(200).json({
+                status: "Success",
+                message: "Get data success !!!",
+                data: course
             });
         } catch (error) {
             return res.status(500).json({
