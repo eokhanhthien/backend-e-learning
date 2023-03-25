@@ -92,7 +92,7 @@ const userController = {
                 message: "Delete data Fail !!!",
             })
         }
-    }
+    },
 }
 
 module.exports = userController

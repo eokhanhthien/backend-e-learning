@@ -218,6 +218,29 @@ const apifrontendController = {
         }
     },
 
+    getUser: async (req, res) => {
+        const post = req.body.post.post;
+        // console.log(post)
+
+        try {
+           const user = await UserModel.find({role:post.role});
+                return res.status(200).json({
+                    status: "Success",
+                    message: "Change password success !!!",
+                    user,
+    
+                });
+     
+           }
+
+        catch (error) {
+            res.status(500).json({
+                status: "Fail",
+                message: "Edit data Fail !!!",
+            })
+        }
+    },
+
     login: async (req, res) => {
         const post = req.body;
         // console.log(post.email);
