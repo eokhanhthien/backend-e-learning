@@ -45,7 +45,7 @@ const userController = {
                     message: "Incorrect password",
                 });
             }
-            const token = jwt.sign({ _id: user._id.toString() }, 'secretKey', { expiresIn: '1200s' });
+            const token = jwt.sign({ _id: user._id.toString() }, 'secretKey', { expiresIn: '14400s' });
             // localStorage.setItem("token", token );
             return res.status(200).json({ user, token });
         } catch (error) {

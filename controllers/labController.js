@@ -2,6 +2,7 @@ const lessonModel = require('../models/lesson.model');
 const LessonDetailModel = require('../models/lessonDetail.model');
 let fs = require('fs');
 
+const cloudinary = require('cloudinary').v2;
 
 const labController = {
     getAllLab:   async (req,res)=>{
@@ -60,7 +61,7 @@ const labController = {
             const arr = [];
             const body = req.body;
             for (let index = 0; index < req.files.length; index++) { //NEW ONE
-                arr.push(req.files[index].filename);
+                arr.push(req.files[index].path);
               }
         //     const nameImage = req.file.filename;
             body.image = arr;
@@ -103,7 +104,7 @@ const labController = {
             const {id} = req.params;
             let arr = [];
             const body = req.body;
-            
+            console.log(body)
             // arr = req.body.old_image.split(', ') // chuyen chuoi thanh
             const old_image = req.body.old_image;
             const old_image_array = old_image.split(',');
@@ -113,12 +114,24 @@ const labController = {
  
             if(req.files.length >0){
                 for (let index = 0; index < req.files.length; index++) { //NEW ONE
-                    arr.push(req.files[index].filename);
+                    arr.push(req.files[index].path);
                   }
                 try {
+                    const array_filename = [];
                     for(let i = 0 ; i< old_image_array.length ; i++){
-                        fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+old_image_array[i]);
+                        //trong sourcode
+                        // fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+old_image_array[i]);
+
+                        // console.log(req.body.old_image)
+                        const cloudinaryUrl = cloudinary.url(old_image_array[i], { type: 'upload' });
+                        array_filename.push(cloudinaryUrl.split('/').pop().split('.')[0]);
+
                     }
+                    // console.log(array_filename)
+                    array_filename.forEach(async (item) =>{
+                        await cloudinary.uploader.destroy('eLearning/'+item);
+
+                    })
                     
                 } catch (error) {
                     console.log(error);
@@ -165,10 +178,19 @@ const labController = {
             if(result){  
                     const resultDetail = await LessonDetailModel.findOneAndDelete({ id_lab : id });
                     if(resultDetail.image != ''){
-                        try {   
+                        try {  
+                            const array_filename = [];
                             for(let i =0 ; i< resultDetail.image.length ; i++){
-                                fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+ resultDetail.image[i]);
+                            // anh trong sourcode 
+                            // fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+ resultDetail.image[i]);
+
+                            const cloudinaryUrl = cloudinary.url(resultDetail.image[i], { type: 'upload' });
+                            array_filename.push(cloudinaryUrl.split('/').pop().split('.')[0]);
                             } 
+                            array_filename.forEach(async (item) =>{
+                                await cloudinary.uploader.destroy('eLearning/'+item);
+        
+                            })
                         } catch (error) {
                             console.log(error);
                         }

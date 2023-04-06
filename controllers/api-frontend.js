@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 
 let fs = require('fs');
+const cloudinary = require('cloudinary').v2;
 
 const apifrontendController = {
     getAllcourse:   async (req,res)=>{
@@ -150,10 +151,18 @@ const apifrontendController = {
         try {
             let new_image = '';
             if(req.file){
-                new_image = req.file.filename;
+                // .name la trong sorucode
+                // new_image = req.file.filename;
+                new_image = req.file.path;
                 try {
                     if(req.body.old_image != 'user-default.png'){
-                        fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+req.body.old_image);
+                        // fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+req.body.old_image);
+
+                        const cloudinaryUrl = cloudinary.url(req.body.old_image, { type: 'upload' });
+                        const publicId = cloudinaryUrl.split('/').pop().split('.')[0];
+    
+                        console.log(publicId);
+                        await cloudinary.uploader.destroy('eLearning/'+publicId );
                     }
                     
                 } catch (error) {

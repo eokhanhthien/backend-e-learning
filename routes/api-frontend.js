@@ -4,6 +4,30 @@ const apifrontend = require('../controllers/api-frontend');
 const route = express.Router()
 
 
+// upload file len Cloud dinary 
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
+const path = require('path');
+// Configuration 
+cloudinary.config({
+    cloud_name: "do6gi72zf",
+    api_key: "715479992252473",
+    api_secret: "iq2ohjzRm_164TFTzDLb6am3ngs"
+  });
+// Tạo một đối tượng CloudinaryStorage để lưu trữ tệp tin
+const storage_cloudinary = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    // folder: "your-folder-name",
+    allowedFormats: ["jpg", "png", "jpeg", "gif"],
+    // transformation: [{ width: 500, height: 500, crop: "limit" }],
+    params: {
+        folder : 'eLearning'
+    }
+   
+  });
+  
+
+// ---------------------------------------------------------------------------------------------------------------------------------
 
 // upload image
 const multer = require("multer")
@@ -17,7 +41,7 @@ const storage = multer.diskStorage({
         cb(null, Date.now()+'.jpg');
     }
 })
-const upload = multer({storage: storage}).single("image")
+const upload = multer({storage: storage_cloudinary}).single("image")
 
 route.get('/api/course-frontend', apifrontend.getAllcourse)
 route.get('/api/mycourse-frontend/:id', apifrontend.getMycourse)

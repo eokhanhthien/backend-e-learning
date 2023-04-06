@@ -1,9 +1,10 @@
 const CourseModel = require('../models/course.model');
 let fs = require('fs');
 
+const cloudinary = require('cloudinary').v2;
 
 const courseController = {
-    getAllCourse:   async (req,res)=>{
+    getAllCourse: async (req, res) => {
         try {
             const data = await CourseModel.find()
 
@@ -19,9 +20,9 @@ const courseController = {
             })
         }
     },
-    getrowCourse:   async (req,res)=>{
+    getrowCourse: async (req, res) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const data = await CourseModel.findById(id)
 
             return res.status(200).json({
@@ -37,13 +38,14 @@ const courseController = {
         }
     },
 
-    createCourse:   async (req,res)=>{
+    createCourse: async (req, res) => {
+        // console.log(req.file)
         try {
             const body = req.body;
-            const nameImage = req.file.filename;
+            const nameImage = req.file.path;
             body.image = nameImage;
-            const {name,id_language,level,name_language,description, image } = body;
-            const Course = new CourseModel({name,id_language,level,name_language,description, image});
+            const { name, id_language, level, name_language, description, image } = body;
+            const Course = new CourseModel({ name, id_language, level, name_language, description, image });
             await Course.save();
             return res.status(200).json({
                 status: "Success",
@@ -57,22 +59,27 @@ const courseController = {
         }
     },
 
-    editCourse:   async (req,res)=>{
+    editCourse: async (req, res) => {
 
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             // const post = req.body;
             // console.log(post);
             let new_image = '';
-            if(req.file){
-                new_image = req.file.filename;
+            if (req.file) {
+                new_image = req.file.path;
                 try {
-                    fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+req.body.old_image);
-                    
+                    //trong sourcode
+                    // fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+req.body.old_image);
+                    const cloudinaryUrl = cloudinary.url(req.body.old_image, { type: 'upload' });
+                    const publicId = cloudinaryUrl.split('/').pop().split('.')[0];
+
+                    console.log(publicId);
+                    await cloudinary.uploader.destroy('eLearning/'+publicId );
                 } catch (error) {
                     console.log(error);
                 }
-            }else{
+            } else {
                 new_image = req.body.old_image;
             }
             const newPost = req.body;
@@ -80,9 +87,9 @@ const courseController = {
             // console.log(req.body);
             // console.log(res.file.filename);
             // const {name,id_language,level,name_language,description, image } = newPost;
-           
 
-            await CourseModel.findByIdAndUpdate(id,newPost)
+
+            await CourseModel.findByIdAndUpdate(id, newPost)
 
 
             res.status(200).json({
@@ -97,13 +104,20 @@ const courseController = {
         }
     },
 
-    deleteCourse:   async (req,res)=>{
+    deleteCourse: async (req, res) => {
         try {
-            const {id} = req.params;
-            const result =  await CourseModel.findByIdAndDelete(id)
-            if(result.image != ''){
-                try {    
-                    fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/'+result.image);
+            const { id } = req.params;
+            const result = await CourseModel.findByIdAndDelete(id)
+            if (result.image != '') {
+                try {
+                    // fs.unlinkSync('../../Vuejs/e-learning/src/assets/images/' + result.image);
+
+                    const cloudinaryUrl = cloudinary.url(result.image, { type: 'upload' });
+                    const publicId = cloudinaryUrl.split('/').pop().split('.')[0];
+
+                    // console.log(publicId);
+                    await cloudinary.uploader.destroy('eLearning/'+publicId );
+
                 } catch (error) {
                     console.log(error);
                 }
@@ -121,12 +135,12 @@ const courseController = {
         }
     },
 
-    uploadCourse: async (req,res)=>{
+    uploadCourse: async (req, res) => {
         try {
             console.log("dang vao day")
-            
 
-            res.json({file: req.file})
+
+            res.json({ file: req.file })
             // res.status(200).json({
             //     status: "Success",
             //     message: "Upload data success !!!",
